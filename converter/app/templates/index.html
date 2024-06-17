@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube to MP3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 95vh;
+            background-color: #f9f9f9;
+        }
+        .container {
+            text-align: center;
+            background: white;
+            width: 50%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .clear {
+            background-color: #ff0000;
+        }
+        .clear:hover {
+            background-color: #cc0000;
+        }
+        .download {
+            display: none;
+            background-color: #28a745;
+        }
+        .download:hover {
+            background-color: #218838;
+        }
+        .result {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube to MP3</h1>
+        <input type="text" id="youtubeUrl" placeholder="Enter YouTube URL">
+        <br>
+        <button id="mp3" onclick="convertToMP3()">Convert</button>
+        <button class="clear" id="clear" onclick="clearInput()">Clear</button>
+        <div class="loading" id="loading">Loading...</div>
+        <div class="result" id="result">
+            <button class="download" id="download" onclick="downloadMP3()">Download</button>
+            <div class="error" id="error"></div>
+        </div>
+    </div>
+
+    <script>
+        let downloadUrl = '';
+
+        function convertToMP3() {
+            document.getElementById('download').style.display = 'none';
+            document.getElementById('error').innerHTML = '';
+
+            const url = document.getElementById('youtubeUrl').value;
+            if (!url) {
+                document.getElementById('error').innerHTML = 'Please enter a YouTube URL';
+                return;
+            }
+
+            const apiUrl = `/api/song/?url=${encodeURIComponent(url)}&format=mp3`;
+
+            document.getElementById('loading').style.display = 'block';
+
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loading').style.display = 'none';
+                    if (data.success) {
+                        downloadUrl = data.downloadUrl;  // Store the download URL
+                        document.getElementById('download').style.display = 'block';
+                    } else {
+                        document.getElementById('loading').style.display = 'none';
+                        document.getElementById('error').innerHTML = 'Please enter a valid YouTube URL';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    alert(error);
+                    console.error('Error:', error);
+                });
+        }
+
+        function downloadMP3() {
+            const downloadLink = document.createElement('a');
+            downloadLink.setAttribute('href', downloadUrl);
+            downloadLink.setAttribute('download', 'converted.mp3');
+            downloadLink.click();
+        }
+
+        function clearInput() {
+            document.getElementById('youtubeUrl').value = '';
+            document.getElementById('error').innerHTML = '';
+            document.getElementById('download').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
