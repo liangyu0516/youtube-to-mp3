@@ -13,12 +13,11 @@ class HomeView(View):
 
 class SongView(View):
     def get(self, request):
-        if not os.path.exists('media'):
-            os.makedirs('media')
 
         for filename in os.listdir('media/'):
-            file_path = os.path.join('media/', filename)
-            os.remove(file_path)
+            if filename.endswith('.mp3'):
+                file_path = os.path.join('media/', filename)
+                os.remove(file_path)
 
         url = request.GET.get('url')
 
