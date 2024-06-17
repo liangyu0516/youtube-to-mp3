@@ -13,4 +13,4 @@ urlpatterns = [
     path(API_PREFIX + 'song/', SongView.as_view()),
 ]
 
-urlpatterns += static('media/', document_root=os.path.join(settings.BASE_DIR, 'media/'))
+urlpatterns += static('tmp/', document_root=os.path.join(settings.BASE_DIR, 'tmp/'))

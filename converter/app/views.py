@@ -14,9 +14,9 @@ class HomeView(View):
 class SongView(View):
     def get(self, request):
 
-        for filename in os.listdir('media/'):
+        for filename in os.listdir('tmp/'):
             if filename.endswith('.mp3'):
-                file_path = os.path.join('media/', filename)
+                file_path = os.path.join('tmp/', filename)
                 os.remove(file_path)
 
         url = request.GET.get('url')
@@ -27,7 +27,7 @@ class SongView(View):
         try:
             yt = YouTube(url)
             stream = yt.streams.filter(only_audio=True).first()
-            file_path = stream.download('media')
+            file_path = stream.download('tmp')
 
             audio_clip = AudioFileClip(file_path)
             audio_path = file_path.replace('.mp4', '.mp3')
@@ -36,7 +36,7 @@ class SongView(View):
             os.remove(file_path)
             file_path = audio_path
 
-            download_url = f'media/{os.path.basename(file_path)}'
+            download_url = f'tmp/{os.path.basename(file_path)}'
             return JsonResponse({'success': True, 'downloadUrl': download_url})
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
