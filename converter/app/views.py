@@ -13,6 +13,9 @@ class HomeView(View):
 
 class SongView(View):
     def get(self, request):
+        if not os.path.exists('media'):
+            os.makedirs('media')
+
         for filename in os.listdir('media/'):
             file_path = os.path.join('media/', filename)
             os.remove(file_path)
